@@ -1,4 +1,5 @@
 #include <bits/stdc++.h>
+#include <fstream>
 
 using namespace std;
 
@@ -88,10 +89,21 @@ public:
 
 };
 
+void printData() {
+    for(auto& person : personList){
+        cout << "-----------------------" << endl;
+        cout << person->getFullName() << endl;
+    }
+}
+
 Person *findPerson(string fullName) {
+    cout << fullName << endl;
+    cout << "-----------------" << endl;
     for (auto &person: personList) {
+        cout<< person->getFullName() << "  ===  " << fullName << endl;
         if (person->getFullName() == fullName)
             return person;
+
     }
     return nullptr;
 }
@@ -108,6 +120,7 @@ void menu() {
         cout << "6. Primas" << endl;
         cout << "7. Tios" << endl;
         cout << "8. Tias" << endl;
+        cout << "9. Print Data" << endl;
         cout << "0. Salir" << endl;
 
         cout << "\nOpcion: ";
@@ -116,7 +129,7 @@ void menu() {
         switch (option) {
             case 1: {
                 string firstName, lastName;
-                cout << "Nombre y Apellido";
+                cout << "Nombre y Apellido: ";
                 cin >> firstName >> lastName;
                 Person *person = findPerson(firstName + " " + lastName);
                 if(person) {
@@ -145,6 +158,10 @@ void menu() {
             case 8: {
                 break;
             }
+            case 9: {
+                printData();
+                break;
+            };
             case 0: {
                 cout << "Saliendo..!" << endl;
                 break;
@@ -157,9 +174,53 @@ void menu() {
     } while (option);
 }
 
-int main() {
-    string firstName, lastName, sex;
+void inputData(ifstream& file) {
+    if (file.is_open()) {  // Verifica si el archivo se abrió correctamente
+        string firstName, lastName, sex;
+        while (file >> firstName >> lastName >> sex, firstName != "0", lastName != "0", sex != "0") {
+            personList.push_back(new Person(firstName, lastName, sex));
+        }
 
+        sort(personList.begin(), personList.end(), [](const auto &a, const auto &b) {
+            return a->getFirstName() + a->getLastName() < b->getFirstName() + b->getLastName();
+        });
+
+        string a, b, c, d, e;
+        while (file >> a >> b >> c >> d >> e, a != "0", b != "0", c != "0", d != "0", e != "0") {
+            string fullName_first = a + " " + b;
+            string fullName_second = c + " " + d;
+
+            Person *firstPerson = nullptr;
+            Person *secondPerson = nullptr;
+
+            bool band = true;
+            for (auto &person: personList) {
+                if (person->getFullName() == fullName_first) {
+                    firstPerson = person;
+                } else band = false;
+                if (person->getFullName() == fullName_second) {
+                    secondPerson = person;
+                } else band = false;
+            }
+
+            if (e == HIJO or e == HIJA and band) {
+                firstPerson->addChild(secondPerson);
+            }
+        }
+
+
+        file.close();  // Cierra el archivo
+    } else {
+        std::cout << "No se pudo abrir el archivo." << std::endl;
+    }
+}
+
+int main() {
+    ifstream file("input.in");
+    inputData(file);
+
+    /*
+    string firstName, lastName, sex;
     while (cin >> firstName >> lastName >> sex, firstName != "0", lastName != "0", sex != "0") {
         personList.push_back(new Person(firstName, lastName, sex));
     }
@@ -190,6 +251,7 @@ int main() {
             firstPerson->addChild(secondPerson);
         }
     }
+    */
 
     menu();
     return 0;
