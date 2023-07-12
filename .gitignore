@@ -1,0 +1,12 @@
+# .gitignore
+
+/cmake-build-debug
+/venv
+/.vscode
+/.cph
+/.idea
+*.out
+*.in
+*eject
+*.bin
+*.txt
